@@ -1,0 +1,5 @@
+[中文语料库链接] https://share.weiyun.com/5zGPyJX                                                     
+中文停词(stopwords)列表：https://github.com/zcqin/DLNLP2023/blob/main/cn_stopwords.txt                                                 【腾讯文档】Entropy_of_English_PeterBrown
+Entropy_of_English_PeterBrown
+作业: 第一部分：通过中文语料库来验证Zipf's Law. 
+第二部分：阅读Entropy Of English（链接如上），计算中文(分别以词和字为单位) 的平均信息熵。 报告与代码分别用两个链接，报告的形式请看相应的报告链接。     
