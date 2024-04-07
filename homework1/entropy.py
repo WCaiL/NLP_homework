@@ -1,3 +1,4 @@
+# 参考链接https://blog.csdn.net/qq_45688080/article/details/130669630
 import os
 import jieba
 import math
@@ -65,7 +66,10 @@ def draw_img(imgs_folder, zh_file_entropy, type="word"):
         plt.ylabel("信息熵")
         # 显示
         plt.xticks(fontsize=7)
-        plt.savefig(os.path.join(imgs_folder,str(index)+".jpg"))
+        if type=="word":
+            plt.savefig(os.path.join(imgs_folder,str(index)+"word.jpg"))
+        else:
+            plt.savefig(os.path.join(imgs_folder, str(index) + "char.jpg"))
         plt.show()
         
 if __name__ == "__main__":
@@ -78,23 +82,32 @@ if __name__ == "__main__":
     stop.append('\n')
     stop.append('\u3000')
     # extra_characters = {"，", "。", "\n", "“", "”", "：", "；", "？", "（", "）", "！", "…", "\u3000"}
-    zh_file_word_entropy = collections.defaultdict(list) # 用来记录n元信息熵
+    zh_file_word_entropy = collections.defaultdict(list) # 用来记录n元词组信息熵
+    zh_file_char_entropy = collections.defaultdict(list) # 用来记录n元字组信息熵
     for name in inf:
         with open("./datasets_cn/" + name + ".txt", "r", encoding="gb18030") as f:
             txt = f.read()
             print('正在分析的文件是：', name)
             words = jieba.lcut(txt)
             cleaned_words = []
+            cleaned_chars = []
             for word in words:
                 if word in stop:
                     continue
                 cleaned_words.append(word)
+            for char in txt:
+                if char in stop:
+                    continue
+                cleaned_chars.append(char)
             # 计算该本小说的n元信息熵 此处：1-3元
             for i in range(1, 4):
                 entropy_word = getNentropy(i, cleaned_words)
-                zh_file_word_entropy[name].append(entropy_word) # {文件名:[entropy_1,entropy_2,...entropy_n]}
+                entropy_char = getNentropy(i, cleaned_chars)
+                zh_file_word_entropy[name].append(entropy_word)
+                zh_file_char_entropy[name].append(entropy_char)
     # 输出不同小说的n元信息熵
     print(zh_file_word_entropy)
+    print(zh_file_char_entropy)
     sum = [0, 0, 0]
     for key, value in zh_file_word_entropy.items():
         sum[0] += value[0]
@@ -103,6 +116,15 @@ if __name__ == "__main__":
     print("1元信息熵平均值：", sum[0] / len(zh_file_word_entropy))
     print("2元信息熵平均值：", sum[1] / len(zh_file_word_entropy))
     print("3元信息熵平均值：", sum[2] / len(zh_file_word_entropy))
+    sum = [0, 0, 0]
+    for key, value in zh_file_char_entropy.items():
+        sum[0] += value[0]
+        sum[1] += value[1]
+        sum[2] += value[2]
+    print("1元信息熵平均值：", sum[0] / len(zh_file_char_entropy))
+    print("2元信息熵平均值：", sum[1] / len(zh_file_char_entropy))
+    print("3元信息熵平均值：", sum[2] / len(zh_file_char_entropy))
     # 画图
     draw_img(imgs_folder, zh_file_word_entropy, type="word")
+    draw_img(imgs_folder, zh_file_char_entropy, type="char")
     print("Finish!")
